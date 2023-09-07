@@ -15,6 +15,29 @@ const App = (): React.ReactElement => {
     useState<QuestionStructure | null>(null);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [hasEnded, setHasEnded] = useState(false);
+  const [results, setResults] = useState<{
+    answersCount: number;
+    correctAnswersCount: number;
+  } | null>(null);
+
+  useEffect(() => {
+    if (hasEnded) {
+      (async () => {
+        const {
+          data: {
+            stats: { answersCount, correctAnswersCount },
+          },
+        } = await axios.get<{
+          stats: {
+            answersCount: number;
+            correctAnswersCount: number;
+          };
+        }>(`quizzes/results/${quizId}`);
+
+        setResults({ answersCount, correctAnswersCount });
+      })();
+    }
+  }, [hasEnded, quizId]);
 
   useEffect(() => {
     const queryParams = new URLSearchParams(window.location.search);
@@ -98,10 +121,19 @@ const App = (): React.ReactElement => {
             }}
           />
         )}
-        {hasEnded && (
+        {hasEnded && results && (
           <>
             <p>Gracias por realizar el test, aquí tienes tus resultados:</p>
-            <p></p>
+            <p>Total preguntas respondidas: {results.answersCount}</p>
+            <p>Total preguntas acertadas: {results.correctAnswersCount}</p>
+            <p>
+              Porcentaje de aciertos:{" "}
+              {(
+                (results.correctAnswersCount / results.answersCount) *
+                100
+              ).toFixed(2)}
+              %
+            </p>
           </>
         )}
       </>
