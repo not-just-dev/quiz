@@ -1,9 +1,13 @@
+import jwtDecode from "jwt-decode";
 import axios from "axios";
 import { useEffect, useState } from "react";
+
+axios.defaults.baseURL = import.meta.env.VITE_APP_API_URL;
 
 const App = (): React.ReactElement => {
   const [isLogged, setIsLogged] = useState(false);
   const [isReady, setIsReady] = useState(false);
+  const [userId, setUserId] = useState("");
 
   useEffect(() => {
     const queryParams = new URLSearchParams(window.location.search);
@@ -16,9 +20,7 @@ const App = (): React.ReactElement => {
 
       (async () => {
         const { data } = await axios.get<{ token: string }>(
-          `${
-            import.meta.env.VITE_APP_API_URL
-          }members/check-key/${memberId}/${key}`,
+          `members/check-key/${memberId}/${key}`,
         );
 
         localStorage.setItem("token", data.token);
@@ -31,7 +33,18 @@ const App = (): React.ReactElement => {
     const token = localStorage.getItem("token");
 
     if (token) {
+      const userId = jwtDecode<{ memberId: string }>(token).memberId;
+
       setIsLogged(true);
+      setUserId(userId);
+
+      (async () => {
+        const {
+          data: { quizId },
+        } = await axios.get<{ quizId: string }>(`quizzes/${userId}`);
+
+        await axios.get(`quizzes/current-question/${quizId}`);
+      })();
     }
 
     setTimeout(() => setIsReady(true), 500);
