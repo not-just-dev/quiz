@@ -10,8 +10,10 @@ const App = (): React.ReactElement => {
   const [isLogged, setIsLogged] = useState(false);
   const [isReady, setIsReady] = useState(false);
   const [, setUserId] = useState("");
+  const [quizId, setQuizId] = useState("");
   const [currentQuestion, setCurrentQuestion] =
     useState<QuestionStructure | null>(null);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
 
   useEffect(() => {
     const queryParams = new URLSearchParams(window.location.search);
@@ -47,13 +49,16 @@ const App = (): React.ReactElement => {
           data: { quizId },
         } = await axios.get<{ quizId: string }>(`quizzes/${userId}`);
 
+        setQuizId(quizId);
+
         const {
-          data: { question },
-        } = await axios.get<{ question: QuestionStructure }>(
+          data: { question, index },
+        } = await axios.get<{ question: QuestionStructure; index: number }>(
           `quizzes/current-question/${quizId}`,
         );
 
         setCurrentQuestion(question);
+        setCurrentQuestionIndex(index);
       })();
     }
 
@@ -62,7 +67,15 @@ const App = (): React.ReactElement => {
 
   return isReady ? (
     isLogged ? (
-      <>{currentQuestion && <Question question={currentQuestion} />}</>
+      <>
+        {currentQuestion && (
+          <Question
+            quizId={quizId}
+            question={currentQuestion}
+            questionIndex={currentQuestionIndex}
+          />
+        )}
+      </>
     ) : (
       <p>
         El link ha expirado o la autenticación ha fallado, genera un nuevo link.
