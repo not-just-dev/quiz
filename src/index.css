@@ -7,3 +7,10 @@
 html {
   font-family: sans-serif;
 }
+
+button {
+  background-color: transparent;
+  border: none;
+  font: inherit;
+  cursor: pointer;
+}

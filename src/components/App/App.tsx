@@ -1,13 +1,17 @@
 import jwtDecode from "jwt-decode";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { QuestionStructure } from "../../types";
+import Question from "../Question/Question";
 
 axios.defaults.baseURL = import.meta.env.VITE_APP_API_URL;
 
 const App = (): React.ReactElement => {
   const [isLogged, setIsLogged] = useState(false);
   const [isReady, setIsReady] = useState(false);
-  const [userId, setUserId] = useState("");
+  const [, setUserId] = useState("");
+  const [currentQuestion, setCurrentQuestion] =
+    useState<QuestionStructure | null>(null);
 
   useEffect(() => {
     const queryParams = new URLSearchParams(window.location.search);
@@ -43,7 +47,13 @@ const App = (): React.ReactElement => {
           data: { quizId },
         } = await axios.get<{ quizId: string }>(`quizzes/${userId}`);
 
-        await axios.get(`quizzes/current-question/${quizId}`);
+        const {
+          data: { question },
+        } = await axios.get<{ question: QuestionStructure }>(
+          `quizzes/current-question/${quizId}`,
+        );
+
+        setCurrentQuestion(question);
       })();
     }
 
@@ -52,7 +62,7 @@ const App = (): React.ReactElement => {
 
   return isReady ? (
     isLogged ? (
-      <p>Autenticado</p>
+      <>{currentQuestion && <Question question={currentQuestion} />}</>
     ) : (
       <p>
         El link ha expirado o la autenticación ha fallado, genera un nuevo link.
