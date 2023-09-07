@@ -7,17 +7,21 @@ interface QuestionProps {
   quizId: string;
   question: QuestionStructure;
   questionIndex: number;
+  onAnswerQuestion: () => void;
 }
 
 const Question = ({
   quizId,
   question: { question, answers },
   questionIndex,
+  onAnswerQuestion,
 }: QuestionProps): React.ReactElement => {
   const checkAnswer = async (answerIndex: number) => {
-    await axios.get(
-      `quizzes/check-answer?quizId=${quizId}&answerIndex=${answerIndex}&questionIndex=${questionIndex}`,
+    await axios.patch(
+      `quizzes/save-answer?quizId=${quizId}&answerIndex=${answerIndex}&questionIndex=${questionIndex}`,
     );
+
+    onAnswerQuestion();
   };
 
   return (

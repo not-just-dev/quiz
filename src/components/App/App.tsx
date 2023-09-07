@@ -1,5 +1,5 @@
 import jwtDecode from "jwt-decode";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { useEffect, useState } from "react";
 import { QuestionStructure } from "../../types";
 import Question from "../Question/Question";
@@ -14,6 +14,7 @@ const App = (): React.ReactElement => {
   const [currentQuestion, setCurrentQuestion] =
     useState<QuestionStructure | null>(null);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [hasEnded, setHasEnded] = useState(false);
 
   useEffect(() => {
     const queryParams = new URLSearchParams(window.location.search);
@@ -50,15 +51,20 @@ const App = (): React.ReactElement => {
         } = await axios.get<{ quizId: string }>(`quizzes/${userId}`);
 
         setQuizId(quizId);
+        try {
+          const {
+            data: { question, index },
+          } = await axios.get<{ question: QuestionStructure; index: number }>(
+            `quizzes/current-question/${quizId}`,
+          );
 
-        const {
-          data: { question, index },
-        } = await axios.get<{ question: QuestionStructure; index: number }>(
-          `quizzes/current-question/${quizId}`,
-        );
-
-        setCurrentQuestion(question);
-        setCurrentQuestionIndex(index);
+          setCurrentQuestion(question);
+          setCurrentQuestionIndex(index);
+        } catch (error) {
+          if ((error as AxiosError).response?.status === 404) {
+            setHasEnded(true);
+          }
+        }
       })();
     }
 
@@ -68,12 +74,35 @@ const App = (): React.ReactElement => {
   return isReady ? (
     isLogged ? (
       <>
-        {currentQuestion && (
+        {currentQuestion && !hasEnded && (
           <Question
             quizId={quizId}
             question={currentQuestion}
             questionIndex={currentQuestionIndex}
+            onAnswerQuestion={async () => {
+              try {
+                const {
+                  data: { question, index },
+                } = await axios.get<{
+                  question: QuestionStructure;
+                  index: number;
+                }>(`quizzes/current-question/${quizId}`);
+
+                setCurrentQuestion(question);
+                setCurrentQuestionIndex(index);
+              } catch (error) {
+                if ((error as AxiosError).response?.status === 404) {
+                  setHasEnded(true);
+                }
+              }
+            }}
           />
+        )}
+        {hasEnded && (
+          <>
+            <p>Gracias por realizar el test, aquí tienes tus resultados:</p>
+            <p></p>
+          </>
         )}
       </>
     ) : (
