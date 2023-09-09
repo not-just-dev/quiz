@@ -26,7 +26,7 @@ const Question = ({
 
   return (
     <article className="question">
-      <h2>{question}</h2>
+      <h2 className="question__title">{question}</h2>
       <div className="question__answers">
         {answers.map((answer, position) => (
           <Button

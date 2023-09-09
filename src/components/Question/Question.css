@@ -1,3 +1,14 @@
+.question__title {
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+@media (min-width: 620px) {
+  .question__title {
+    font-size: 1.2rem;
+  }
+}
+
 .question__answers {
   display: flex;
   flex-direction: column;
