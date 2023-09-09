@@ -37,7 +37,7 @@ const useApi = () => {
     return data;
   }, []);
 
-  const checkMemberKey = async (memberId: string, key: string) => {
+  const checkMemberKey = useCallback(async (memberId: string, key: string) => {
     const {
       data: { token },
     } = await axios.get<{ token: string }>(
@@ -45,7 +45,7 @@ const useApi = () => {
     );
 
     return token;
-  };
+  }, []);
 
   return {
     getQuizzIdByUserId,

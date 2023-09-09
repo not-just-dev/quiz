@@ -1,12 +1,10 @@
-.question {
-  width: 500px;
+.question__answers {
   display: flex;
   flex-direction: column;
+  gap: 20px;
 }
 
-.question__answers {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  grid-template-rows: repeat(2, 1fr);
-  gap: 20px;
+.question__answer {
+  text-align: left;
+  padding: 15px;
 }

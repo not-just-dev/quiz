@@ -29,7 +29,11 @@ const Question = ({
       <h2>{question}</h2>
       <div className="question__answers">
         {answers.map((answer, position) => (
-          <Button key={position} actionOnClick={() => checkAnswer(position)}>
+          <Button
+            className="question__answer"
+            key={position}
+            actionOnClick={() => checkAnswer(position)}
+          >
             {answer}
           </Button>
         ))}

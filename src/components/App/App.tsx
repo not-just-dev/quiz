@@ -88,50 +88,52 @@ const App = (): React.ReactElement => {
     }
 
     setTimeout(() => setIsReady(true), 500);
-  }, [getCurrentQuestionByQuizId, getQuizzIdByUserId]);
+  }, [checkMemberKey, getCurrentQuestionByQuizId, getQuizzIdByUserId]);
 
   return (
     <div className="container">
       <Header />
-      {isReady ? (
-        isLogged ? (
-          <>
-            {currentQuestion && !hasEnded && (
-              <>
-                <p>
-                  Pregunta {currentQuestionIndex + 1} de {questionsCount}
-                </p>
-                <Question
-                  quizId={quizId}
-                  question={currentQuestion}
-                  questionIndex={currentQuestionIndex}
-                  onAnswerQuestion={async () => {
-                    try {
-                      const { question, index } =
-                        await getCurrentQuestionByQuizId(quizId);
+      <main className="main-content">
+        {isReady ? (
+          isLogged ? (
+            <>
+              {currentQuestion && !hasEnded && (
+                <>
+                  <p>
+                    Pregunta {currentQuestionIndex + 1} de {questionsCount}
+                  </p>
+                  <Question
+                    quizId={quizId}
+                    question={currentQuestion}
+                    questionIndex={currentQuestionIndex}
+                    onAnswerQuestion={async () => {
+                      try {
+                        const { question, index } =
+                          await getCurrentQuestionByQuizId(quizId);
 
-                      setCurrentQuestion(question);
-                      setCurrentQuestionIndex(index);
-                    } catch (error) {
-                      if ((error as AxiosError).response?.status === 404) {
-                        setHasEnded(true);
+                        setCurrentQuestion(question);
+                        setCurrentQuestionIndex(index);
+                      } catch (error) {
+                        if ((error as AxiosError).response?.status === 404) {
+                          setHasEnded(true);
+                        }
                       }
-                    }
-                  }}
-                />
-              </>
-            )}
-            {hasEnded && results && <Results results={results} />}
-          </>
+                    }}
+                  />
+                </>
+              )}
+              {hasEnded && results && <Results results={results} />}
+            </>
+          ) : (
+            <p>
+              El link ha expirado o la autenticación ha fallado, genera un nuevo
+              link.
+            </p>
+          )
         ) : (
-          <p>
-            El link ha expirado o la autenticación ha fallado, genera un nuevo
-            link.
-          </p>
-        )
-      ) : (
-        <p>Autenticando...</p>
-      )}
+          <p>Autenticando...</p>
+        )}
+      </main>
     </div>
   );
 };
