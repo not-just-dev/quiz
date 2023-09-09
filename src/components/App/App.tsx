@@ -3,6 +3,9 @@ import axios, { AxiosError } from "axios";
 import { useEffect, useState } from "react";
 import { QuestionStructure } from "../../types";
 import Question from "../Question/Question";
+import Results from "../Results/Results";
+import useApi from "../hooks/useApi/useApi";
+import Header from "../Header/Header";
 
 axios.defaults.baseURL = import.meta.env.VITE_APP_API_URL;
 
@@ -11,6 +14,7 @@ const App = (): React.ReactElement => {
   const [isReady, setIsReady] = useState(false);
   const [, setUserId] = useState("");
   const [quizId, setQuizId] = useState("");
+  const [questionsCount, setQuestionsCount] = useState(0);
   const [currentQuestion, setCurrentQuestion] =
     useState<QuestionStructure | null>(null);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -20,24 +24,23 @@ const App = (): React.ReactElement => {
     correctAnswersCount: number;
   } | null>(null);
 
+  const {
+    getQuizzIdByUserId,
+    getQuizzResultsByQuizId,
+    getCurrentQuestionByQuizId,
+    checkMemberKey,
+  } = useApi();
+
   useEffect(() => {
     if (hasEnded) {
       (async () => {
-        const {
-          data: {
-            stats: { answersCount, correctAnswersCount },
-          },
-        } = await axios.get<{
-          stats: {
-            answersCount: number;
-            correctAnswersCount: number;
-          };
-        }>(`quizzes/results/${quizId}`);
+        const { answersCount, correctAnswersCount } =
+          await getQuizzResultsByQuizId(quizId);
 
         setResults({ answersCount, correctAnswersCount });
       })();
     }
-  }, [hasEnded, quizId]);
+  }, [getQuizzResultsByQuizId, hasEnded, quizId]);
 
   useEffect(() => {
     const queryParams = new URLSearchParams(window.location.search);
@@ -45,15 +48,13 @@ const App = (): React.ReactElement => {
     const memberId = queryParams.get("id");
     const key = queryParams.get("key");
 
-    if (memberId || key) {
+    if (memberId && key) {
       localStorage.removeItem("token");
 
       (async () => {
-        const { data } = await axios.get<{ token: string }>(
-          `members/check-key/${memberId}/${key}`,
-        );
+        const token = await checkMemberKey(memberId, key);
 
-        localStorage.setItem("token", data.token);
+        localStorage.setItem("token", token);
 
         const currentUrl = window.location.origin + window.location.pathname;
         window.location.replace(currentUrl);
@@ -69,17 +70,12 @@ const App = (): React.ReactElement => {
       setUserId(userId);
 
       (async () => {
-        const {
-          data: { quizId },
-        } = await axios.get<{ quizId: string }>(`quizzes/${userId}`);
+        const { quizId, questionsCount } = await getQuizzIdByUserId(userId);
 
         setQuizId(quizId);
+        setQuestionsCount(questionsCount);
         try {
-          const {
-            data: { question, index },
-          } = await axios.get<{ question: QuestionStructure; index: number }>(
-            `quizzes/current-question/${quizId}`,
-          );
+          const { question, index } = await getCurrentQuestionByQuizId(quizId);
 
           setCurrentQuestion(question);
           setCurrentQuestionIndex(index);
@@ -92,58 +88,51 @@ const App = (): React.ReactElement => {
     }
 
     setTimeout(() => setIsReady(true), 500);
-  }, []);
+  }, [getCurrentQuestionByQuizId, getQuizzIdByUserId]);
 
-  return isReady ? (
-    isLogged ? (
-      <>
-        {currentQuestion && !hasEnded && (
-          <Question
-            quizId={quizId}
-            question={currentQuestion}
-            questionIndex={currentQuestionIndex}
-            onAnswerQuestion={async () => {
-              try {
-                const {
-                  data: { question, index },
-                } = await axios.get<{
-                  question: QuestionStructure;
-                  index: number;
-                }>(`quizzes/current-question/${quizId}`);
-
-                setCurrentQuestion(question);
-                setCurrentQuestionIndex(index);
-              } catch (error) {
-                if ((error as AxiosError).response?.status === 404) {
-                  setHasEnded(true);
-                }
-              }
-            }}
-          />
-        )}
-        {hasEnded && results && (
+  return (
+    <div className="container">
+      <Header />
+      {isReady ? (
+        isLogged ? (
           <>
-            <p>Gracias por realizar el test, aquí tienes tus resultados:</p>
-            <p>Total preguntas respondidas: {results.answersCount}</p>
-            <p>Total preguntas acertadas: {results.correctAnswersCount}</p>
-            <p>
-              Porcentaje de aciertos:{" "}
-              {(
-                (results.correctAnswersCount / results.answersCount) *
-                100
-              ).toFixed(2)}
-              %
-            </p>
+            {currentQuestion && !hasEnded && (
+              <>
+                <p>
+                  Pregunta {currentQuestionIndex + 1} de {questionsCount}
+                </p>
+                <Question
+                  quizId={quizId}
+                  question={currentQuestion}
+                  questionIndex={currentQuestionIndex}
+                  onAnswerQuestion={async () => {
+                    try {
+                      const { question, index } =
+                        await getCurrentQuestionByQuizId(quizId);
+
+                      setCurrentQuestion(question);
+                      setCurrentQuestionIndex(index);
+                    } catch (error) {
+                      if ((error as AxiosError).response?.status === 404) {
+                        setHasEnded(true);
+                      }
+                    }
+                  }}
+                />
+              </>
+            )}
+            {hasEnded && results && <Results results={results} />}
           </>
-        )}
-      </>
-    ) : (
-      <p>
-        El link ha expirado o la autenticación ha fallado, genera un nuevo link.
-      </p>
-    )
-  ) : (
-    <p>Autenticando...</p>
+        ) : (
+          <p>
+            El link ha expirado o la autenticación ha fallado, genera un nuevo
+            link.
+          </p>
+        )
+      ) : (
+        <p>Autenticando...</p>
+      )}
+    </div>
   );
 };
 
