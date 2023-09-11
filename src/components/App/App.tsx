@@ -47,21 +47,31 @@ const App = (): React.ReactElement => {
 
     const memberId = queryParams.get("id");
     const key = queryParams.get("key");
+    let level = queryParams.get("level");
+    let position = queryParams.get("position");
 
     if (memberId && key) {
       localStorage.removeItem("token");
+      localStorage.removeItem("level");
+      localStorage.removeItem("position");
 
       (async () => {
         const token = await checkMemberKey(memberId, key);
 
         localStorage.setItem("token", token);
+        localStorage.setItem("level", level!);
+        localStorage.setItem("position", position!);
 
         const currentUrl = window.location.origin + window.location.pathname;
         window.location.replace(currentUrl);
       })();
+
+      return;
     }
 
     const token = localStorage.getItem("token");
+    level = localStorage.getItem("level");
+    position = localStorage.getItem("position");
 
     if (token) {
       const userId = jwtDecode<{ memberId: string }>(token).memberId;
@@ -70,7 +80,11 @@ const App = (): React.ReactElement => {
       setUserId(userId);
 
       (async () => {
-        const { quizId, questionsCount } = await getQuizzIdByUserId(userId);
+        const { quizId, questionsCount } = await getQuizzIdByUserId(
+          userId,
+          level!,
+          position!,
+        );
 
         setQuizId(quizId);
         setQuestionsCount(questionsCount);
