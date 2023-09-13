@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useCallback } from "react";
-import { QuestionStructure } from "../../../types";
+import { QuestionStructure } from "../../types";
 
 axios.defaults.baseURL = import.meta.env.VITE_APP_API_URL;
 

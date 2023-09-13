@@ -4,10 +4,10 @@ import { useRef, useEffect, useState } from "react";
 import { QuestionStructure } from "../../types";
 import Question from "../Question/Question";
 import Results from "../Results/Results";
-import useApi from "../hooks/useApi/useApi";
-import Header from "../Header/Header";
-import Timer from "../Timer/Timer";
-import "./App.css";
+import useApi from "../../hooks/useApi/useApi";
+import QuizInfo from "../QuizInfo/QuizInfo";
+import Layout from "../Layout/Layout";
+import useLocalStorage from "../../hooks/useLocalStorage/useLocalStorage";
 
 axios.defaults.baseURL = import.meta.env.VITE_APP_API_URL;
 
@@ -35,6 +35,8 @@ const App = (): React.ReactElement => {
     checkMemberKey,
   } = useApi();
 
+  const { getLocalData, setLocalData, cleanLocalData } = useLocalStorage();
+
   useEffect(() => {
     if (hasEnded) {
       (async () => {
@@ -55,16 +57,12 @@ const App = (): React.ReactElement => {
     let position = queryParams.get("position");
 
     if (memberId && key) {
-      localStorage.removeItem("token");
-      localStorage.removeItem("level");
-      localStorage.removeItem("position");
+      cleanLocalData();
 
       (async () => {
         const token = await checkMemberKey(memberId, key);
 
-        localStorage.setItem("token", token);
-        localStorage.setItem("level", level!);
-        localStorage.setItem("position", position!);
+        setLocalData(token, level!, position!);
 
         const currentUrl = window.location.origin + window.location.pathname;
         window.location.replace(currentUrl);
@@ -73,9 +71,14 @@ const App = (): React.ReactElement => {
       return;
     }
 
-    const token = localStorage.getItem("token");
-    level = localStorage.getItem("level");
-    position = localStorage.getItem("position");
+    const {
+      token,
+      level: localLevel,
+      position: localPosition,
+    } = getLocalData();
+
+    level = localLevel;
+    position = localPosition;
 
     if (token) {
       const userId = jwtDecode<{ memberId: string }>(token).memberId;
@@ -110,54 +113,65 @@ const App = (): React.ReactElement => {
     setTimeout(() => setIsReady(true), 500);
   }, [checkMemberKey, getCurrentQuestionByQuizId, getQuizzDataByUserId]);
 
-  return (
-    <div className="container">
-      <Header />
-      <main className="main-content">
-        {isReady ? (
-          isLogged ? (
-            <>
-              {currentQuestion && !hasEnded && (
-                <>
-                  <div className="info">
-                    <span>
-                      Pregunta {currentQuestionIndex + 1} de {questionsCount}
-                    </span>
-                    <Timer endTime={quizzEndTime.current} />
-                  </div>
-                  <Question
-                    quizId={quizId}
-                    question={currentQuestion}
-                    questionIndex={currentQuestionIndex}
-                    onAnswerQuestion={async () => {
-                      try {
-                        const { question, index } =
-                          await getCurrentQuestionByQuizId(quizId);
+  if (!isReady) {
+    return (
+      <Layout>
+        <span>Autenticando...</span>
+      </Layout>
+    );
+  }
 
-                        setCurrentQuestion(question);
-                        setCurrentQuestionIndex(index);
-                      } catch (error) {
-                        if ((error as AxiosError).response?.status === 404) {
-                          setHasEnded(true);
-                        }
-                      }
-                    }}
-                  />
-                </>
-              )}
-              {hasEnded && results && <Results results={results} />}
-            </>
-          ) : (
-            <p>
-              El link ha expirado o la autenticación ha fallado, genera un nuevo
-              link.
-            </p>
-          )
-        ) : (
-          <p>Autenticando...</p>
-        )}
-      </main>
-    </div>
+  if (!isLogged) {
+    return (
+      <Layout>
+        <span>
+          El link ha expirado o la autenticación ha fallado, genera un nuevo
+          link.
+        </span>
+      </Layout>
+    );
+  }
+
+  if (hasEnded && results) {
+    return (
+      <Layout>
+        <Results results={results} />
+      </Layout>
+    );
+  }
+
+  if (!currentQuestion) {
+    setHasEnded(true);
+  }
+
+  return (
+    <Layout>
+      <>
+        <QuizInfo
+          currentQuestionIndex={currentQuestionIndex}
+          questionsCount={questionsCount}
+          quizzEndTime={quizzEndTime.current}
+        />
+        <Question
+          quizId={quizId}
+          question={currentQuestion!}
+          questionIndex={currentQuestionIndex}
+          onAnswerQuestion={async () => {
+            try {
+              const { question, index } =
+                await getCurrentQuestionByQuizId(quizId);
+
+              setCurrentQuestion(question);
+              setCurrentQuestionIndex(index);
+            } catch (error) {
+              if ((error as AxiosError).response?.status === 404) {
+                setHasEnded(true);
+              }
+            }
+          }}
+        />
+      </>
+    </Layout>
   );
 };
 
