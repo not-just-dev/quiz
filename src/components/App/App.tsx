@@ -1,11 +1,13 @@
 import jwtDecode from "jwt-decode";
 import axios, { AxiosError } from "axios";
-import { useEffect, useState } from "react";
+import { useRef, useEffect, useState } from "react";
 import { QuestionStructure } from "../../types";
 import Question from "../Question/Question";
 import Results from "../Results/Results";
 import useApi from "../hooks/useApi/useApi";
 import Header from "../Header/Header";
+import Timer from "../Timer/Timer";
+import "./App.css";
 
 axios.defaults.baseURL = import.meta.env.VITE_APP_API_URL;
 
@@ -24,8 +26,10 @@ const App = (): React.ReactElement => {
     correctAnswersCount: number;
   } | null>(null);
 
+  const quizzEndTime = useRef(new Date());
+
   const {
-    getQuizzIdByUserId,
+    getQuizzDataByUserId,
     getQuizzResultsByQuizId,
     getCurrentQuestionByQuizId,
     checkMemberKey,
@@ -80,7 +84,7 @@ const App = (): React.ReactElement => {
       setUserId(userId);
 
       (async () => {
-        const { quizId, questionsCount } = await getQuizzIdByUserId(
+        const { quizId, questionsCount, endTime } = await getQuizzDataByUserId(
           userId,
           level!,
           position!,
@@ -88,6 +92,8 @@ const App = (): React.ReactElement => {
 
         setQuizId(quizId);
         setQuestionsCount(questionsCount);
+        quizzEndTime.current = new Date(endTime);
+
         try {
           const { question, index } = await getCurrentQuestionByQuizId(quizId);
 
@@ -102,7 +108,7 @@ const App = (): React.ReactElement => {
     }
 
     setTimeout(() => setIsReady(true), 500);
-  }, [checkMemberKey, getCurrentQuestionByQuizId, getQuizzIdByUserId]);
+  }, [checkMemberKey, getCurrentQuestionByQuizId, getQuizzDataByUserId]);
 
   return (
     <div className="container">
@@ -113,9 +119,12 @@ const App = (): React.ReactElement => {
             <>
               {currentQuestion && !hasEnded && (
                 <>
-                  <p>
-                    Pregunta {currentQuestionIndex + 1} de {questionsCount}
-                  </p>
+                  <div className="info">
+                    <span>
+                      Pregunta {currentQuestionIndex + 1} de {questionsCount}
+                    </span>
+                    <Timer endTime={quizzEndTime.current} />
+                  </div>
                   <Question
                     quizId={quizId}
                     question={currentQuestion}

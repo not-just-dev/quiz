@@ -5,15 +5,17 @@ import { QuestionStructure } from "../../../types";
 axios.defaults.baseURL = import.meta.env.VITE_APP_API_URL;
 
 const useApi = () => {
-  const getQuizzIdByUserId = useCallback(
+  const getQuizzDataByUserId = useCallback(
     async (userId: string, level: string, position: string) => {
       const {
-        data: { quizId, questionsCount },
-      } = await axios.get<{ quizId: string; questionsCount: number }>(
-        `quizzes/${userId}?level=${level}&position=${position}`,
-      );
+        data: { quizId, questionsCount, endTime },
+      } = await axios.get<{
+        quizId: string;
+        questionsCount: number;
+        endTime: Date;
+      }>(`quizzes/${userId}?level=${level}&position=${position}`);
 
-      return { quizId, questionsCount };
+      return { quizId, questionsCount, endTime };
     },
     [],
   );
@@ -51,7 +53,7 @@ const useApi = () => {
   }, []);
 
   return {
-    getQuizzIdByUserId,
+    getQuizzDataByUserId,
     getQuizzResultsByQuizId,
     getCurrentQuestionByQuizId,
     checkMemberKey,
