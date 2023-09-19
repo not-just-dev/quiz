@@ -1,25 +1,36 @@
 import { useState, useRef, useEffect } from "react";
 import useUser from "../../hooks/useUser/useUser";
 import Layout from "../Layout/Layout";
+import Game from "../Game/Game";
+import useLocalStorage from "../../hooks/useLocalStorage/useLocalStorage";
 
 const App = (): React.ReactElement => {
   const [isReady, setIsReady] = useState(false);
 
-  const { getToken } = useUser();
+  const { getUserId } = useUser();
+  const { getLocalData } = useLocalStorage();
 
-  const token = useRef("");
+  const userId = useRef("");
+  const level = useRef("");
+  const position = useRef("");
 
   useEffect(() => {
     (async () => {
       try {
-        token.current = await getToken();
+        userId.current = await getUserId();
       } catch {
-        token.current = "";
+        userId.current = "";
       } finally {
         setIsReady(true);
       }
     })();
-  }, [getToken]);
+  }, [getUserId]);
+
+  useEffect(() => {
+    const { level: localLevel, position: localPosition } = getLocalData();
+    level.current = localLevel!;
+    position.current = localPosition!;
+  }, [getLocalData]);
 
   if (!isReady) {
     return (
@@ -29,7 +40,7 @@ const App = (): React.ReactElement => {
     );
   }
 
-  if (!token.current) {
+  if (!userId.current) {
     return (
       <Layout>
         <span>
@@ -42,7 +53,11 @@ const App = (): React.ReactElement => {
 
   return (
     <Layout>
-      <span>Holi</span>
+      <Game
+        userId={userId.current}
+        level={level.current}
+        position={position.current}
+      />
     </Layout>
   );
 };

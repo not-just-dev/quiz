@@ -1,3 +1,4 @@
+import jwtDecode from "jwt-decode";
 import { useCallback, useRef } from "react";
 import useApi from "../useApi/useApi";
 import useLocalStorage from "../useLocalStorage/useLocalStorage";
@@ -8,7 +9,7 @@ const useUser = () => {
 
   const token = useRef("");
 
-  const getToken = useCallback(async () => {
+  const getUserId = useCallback(async () => {
     const queryParams = new URLSearchParams(window.location.search);
 
     const memberId = queryParams.get("id");
@@ -33,11 +34,13 @@ const useUser = () => {
       token.current = localToken!;
     }
 
-    return token.current;
+    const userId = jwtDecode<{ memberId: string }>(token.current).memberId;
+
+    return userId;
   }, [checkMemberKey, cleanLocalData, getLocalData, setLocalData]);
 
   return {
-    getToken,
+    getUserId,
   };
 };
 
