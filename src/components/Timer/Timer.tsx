@@ -1,12 +1,16 @@
 import { useMemo, useState, useEffect } from "react";
 
 interface TimerProps {
-  endTime: Date;
+  endTime: number;
+  actionOnEndTime: () => void;
 }
 
-const Timer = ({ endTime }: TimerProps): React.ReactElement => {
+const Timer = ({
+  endTime,
+  actionOnEndTime,
+}: TimerProps): React.ReactElement => {
   const [millisecondsLeft, setMillisecondsLeft] = useState(
-    endTime.getTime() - Date.now(),
+    endTime - Date.now(),
   );
 
   const { minutesLeft, secondsLeft } = useMemo(() => {
@@ -24,13 +28,18 @@ const Timer = ({ endTime }: TimerProps): React.ReactElement => {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setMillisecondsLeft(endTime.getTime() - Date.now());
+      if (Date.now() >= endTime) {
+        actionOnEndTime();
+        return;
+      }
+
+      setMillisecondsLeft(endTime - Date.now());
     }, 1000);
 
     return () => {
       clearInterval(interval);
     };
-  }, [endTime]);
+  }, [endTime, actionOnEndTime]);
 
   return (
     <div className="timer">

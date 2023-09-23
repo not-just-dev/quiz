@@ -18,6 +18,7 @@ const Game = ({ userId, level, position }: GameProps): React.ReactElement => {
 
   const { getCurrentQuestionByQuizId, getQuizResultsByQuizId } = useApi();
 
+  const [isReady, setIsReady] = useState(false);
   const [hasEnded, setHasEnded] = useState(false);
   const [results, setResults] = useState<{
     answersCount: number;
@@ -54,6 +55,12 @@ const Game = ({ userId, level, position }: GameProps): React.ReactElement => {
         endTime: new Date(apiQuizData.endTime),
       });
 
+      if (new Date(apiQuizData.endTime).getTime() <= Date.now()) {
+        setHasEnded(true);
+      }
+
+      setIsReady(true);
+
       try {
         const { index, question } = await getCurrentQuestion(
           apiQuizData.quizId,
@@ -82,6 +89,10 @@ const Game = ({ userId, level, position }: GameProps): React.ReactElement => {
     }
   }, [getQuizResultsByQuizId, hasEnded, quizData.quizId]);
 
+  if (!isReady) {
+    return <span>Cargando preguntas...</span>;
+  }
+
   if (hasEnded && results) {
     return <Results results={results} />;
   }
@@ -92,6 +103,7 @@ const Game = ({ userId, level, position }: GameProps): React.ReactElement => {
         currentQuestionIndex={currentQuestion.index}
         questionsCount={quizData.questionsCount}
         quizzEndTime={quizData.endTime}
+        actionOnEndTime={() => setHasEnded(true)}
       />
       <Question
         quizId={quizData.quizId}

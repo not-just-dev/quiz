@@ -52,10 +52,19 @@ const useApi = () => {
     return token;
   }, []);
 
+  const getCurrentTime = useCallback(async () => {
+    const {
+      data: { now },
+    } = await axios.get<{ now: number }>("quizzes/current-time");
+
+    return now;
+  }, []);
+
   return {
     getQuizDataByUserId,
     getQuizResultsByQuizId,
     getCurrentQuestionByQuizId,
+    getCurrentTime,
     checkMemberKey,
   };
 };

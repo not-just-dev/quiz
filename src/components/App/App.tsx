@@ -27,10 +27,14 @@ const App = (): React.ReactElement => {
   }, [getUserId]);
 
   useEffect(() => {
+    if (!isReady) {
+      return;
+    }
+
     const { level: localLevel, position: localPosition } = getLocalData();
     level.current = localLevel!;
     position.current = localPosition!;
-  }, [getLocalData]);
+  }, [getLocalData, isReady]);
 
   if (!isReady) {
     return (
