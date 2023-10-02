@@ -49,21 +49,30 @@ const Game = ({ userId, level, position }: GameProps): React.ReactElement => {
 
   useEffect(() => {
     (async () => {
-      const apiQuizData = await getQuizData(userId, level, position);
-      setQuizData({
-        ...apiQuizData,
-        endTime: new Date(apiQuizData.endTime),
-      });
+      let apiQuizData;
 
-      if (new Date(apiQuizData.endTime).getTime() <= Date.now()) {
-        setHasEnded(true);
+      try {
+        apiQuizData = await getQuizData(userId, level, position);
+        setQuizData({
+          ...apiQuizData,
+          endTime: new Date(apiQuizData.endTime),
+        });
+
+        if (new Date(apiQuizData.endTime).getTime() <= Date.now()) {
+          setHasEnded(true);
+        }
+
+        setIsReady(true);
+      } catch (error: unknown) {
+        if ((error as AxiosError).response?.status === 409) {
+          setHasEnded(true);
+          setIsReady(true);
+        }
       }
-
-      setIsReady(true);
 
       try {
         const { index, question } = await getCurrentQuestion(
-          apiQuizData.quizId,
+          apiQuizData!.quizId,
         );
 
         setCurrentQuestion({
@@ -91,6 +100,15 @@ const Game = ({ userId, level, position }: GameProps): React.ReactElement => {
 
   if (!isReady) {
     return <span>Cargando preguntas...</span>;
+  }
+
+  if (hasEnded) {
+    return (
+      <span>
+        No se ha podido cargar el cuestionario, genera otra vez el link desde
+        Discord 😊
+      </span>
+    );
   }
 
   if (hasEnded && results) {
