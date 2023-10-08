@@ -1,6 +1,7 @@
 export interface QuestionStructure {
   id: string;
   question: string;
+  code?: string;
   answers: string[];
   index?: number;
 }

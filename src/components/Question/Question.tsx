@@ -12,7 +12,7 @@ interface QuestionProps {
 
 const Question = ({
   quizId,
-  question: { question, answers },
+  question: { question, code, answers },
   questionIndex,
   onAnswerQuestion,
 }: QuestionProps): React.ReactElement => {
@@ -27,6 +27,7 @@ const Question = ({
   return (
     <article className="question">
       <h2 className="question__title">{question}</h2>
+      {code && <pre className="question__code">{code}</pre>}
       <div className="question__answers">
         {answers.map((answer, position) => (
           <Button

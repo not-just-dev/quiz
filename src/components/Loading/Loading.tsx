@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import "./Loading.css";
 
 const Loading = (): React.ReactElement => {
-  const delayInMilliseconds = 100;
+  const delayInMilliseconds = 300;
 
   const [shouldShow, setShouldShow] = useState(false);
 
