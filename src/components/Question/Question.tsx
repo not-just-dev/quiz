@@ -1,7 +1,7 @@
-import axios from "axios";
 import { QuestionStructure } from "../../types";
 import Button from "../Button/Button";
 import "./Question.css";
+import useApi from "../../hooks/useApi/useApi";
 
 interface QuestionProps {
   quizId: string;
@@ -16,10 +16,10 @@ const Question = ({
   questionIndex,
   onAnswerQuestion,
 }: QuestionProps): React.ReactElement => {
+  const { saveAnswer } = useApi();
+
   const checkAnswer = async (answerIndex: number) => {
-    await axios.patch(
-      `quizzes/save-answer?quizId=${quizId}&answerIndex=${answerIndex}&questionIndex=${questionIndex}`,
-    );
+    saveAnswer(quizId, answerIndex, questionIndex);
 
     onAnswerQuestion();
   };

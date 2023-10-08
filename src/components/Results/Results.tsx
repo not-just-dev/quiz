@@ -8,15 +8,18 @@ interface ResultsProps {
 const Results = ({
   results: { answersCount, correctAnswersCount },
 }: ResultsProps): React.ReactElement => {
+  const correctAnswersPercentage = Number.isNaN(
+    correctAnswersCount / answersCount,
+  )
+    ? 0
+    : (correctAnswersCount / answersCount) * 100;
+
   return (
     <>
-      <p>Has finalizado el test, aquí tienes tus resultados:</p>
-      <p>Total preguntas respondidas: {answersCount}</p>
+      <p>Aquí tienes tus resultados:</p>
+      <p>Total preguntas del test: {answersCount}</p>
       <p>Total preguntas acertadas: {correctAnswersCount}</p>
-      <p>
-        Porcentaje de aciertos:{" "}
-        {((correctAnswersCount / answersCount) * 100).toFixed(2)}%
-      </p>
+      <p>Porcentaje de aciertos: {correctAnswersPercentage.toFixed(2)}%</p>
     </>
   );
 };

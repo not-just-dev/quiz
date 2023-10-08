@@ -1,4 +1,6 @@
 import { useMemo, useState, useEffect } from "react";
+import useGameStore from "../../store";
+import useApi from "../../hooks/useApi/useApi";
 
 interface TimerProps {
   endTime: number;
@@ -9,9 +11,12 @@ const Timer = ({
   endTime,
   actionOnEndTime,
 }: TimerProps): React.ReactElement => {
+  const { quizId } = useGameStore((state) => state);
   const [millisecondsLeft, setMillisecondsLeft] = useState(
     endTime - Date.now(),
   );
+
+  const { setCompleted } = useApi();
 
   const { minutesLeft, secondsLeft } = useMemo(() => {
     const minutesLeft = millisecondsLeft / 1000 / 60;
@@ -27,8 +32,10 @@ const Timer = ({
   const formatTime = (quantity: number) => quantity.toString().padStart(2, "0");
 
   useEffect(() => {
-    const interval = setInterval(() => {
+    const interval = setInterval(async () => {
       if (Date.now() >= endTime) {
+        await setCompleted(quizId);
+
         actionOnEndTime();
         return;
       }
@@ -39,13 +46,17 @@ const Timer = ({
     return () => {
       clearInterval(interval);
     };
-  }, [endTime, actionOnEndTime]);
+  }, [endTime, actionOnEndTime, quizId, setCompleted]);
 
   return (
     <div className="timer">
       Tiempo restante:{" "}
-      <span className="timer__quantity">{formatTime(minutesLeft)}</span>:
-      <span className="timer__quantity">{formatTime(secondsLeft)}</span>
+      {minutesLeft >= 0 && secondsLeft >= 0 && (
+        <>
+          <span className="timer__quantity">{formatTime(minutesLeft)}</span>:
+          <span className="timer__quantity">{formatTime(secondsLeft)}</span>
+        </>
+      )}
     </div>
   );
 };

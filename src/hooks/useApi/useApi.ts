@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useCallback } from "react";
-import { QuestionStructure } from "../../types";
+import { QuestionStructure, QuizData } from "../../types";
 
 axios.defaults.baseURL = import.meta.env.VITE_APP_API_URL;
 
@@ -8,14 +8,12 @@ const useApi = () => {
   const getQuizDataByUserId = useCallback(
     async (userId: string, level: string, position: string) => {
       const {
-        data: { quizId, questionsCount, endTime },
-      } = await axios.get<{
-        quizId: string;
-        questionsCount: number;
-        endTime: Date;
-      }>(`quizzes/${userId}?level=${level}&position=${position}`);
+        data: { quizId, questionsCount, endTime, isDone },
+      } = await axios.get<QuizData>(
+        `quizzes/${userId}?level=${level}&position=${position}`,
+      );
 
-      return { quizId, questionsCount, endTime };
+      return { quizId, questionsCount, endTime, isDone };
     },
     [],
   );
@@ -60,12 +58,27 @@ const useApi = () => {
     return now;
   }, []);
 
+  const setCompleted = useCallback(async (quizId: string) => {
+    await axios.patch(`quizzes/set-completed?quizId=${quizId}`);
+  }, []);
+
+  const saveAnswer = useCallback(
+    async (quizId: string, answerIndex: number, questionIndex: number) => {
+      await axios.patch(
+        `quizzes/save-answer?quizId=${quizId}&answerIndex=${answerIndex}&questionIndex=${questionIndex}`,
+      );
+    },
+    [],
+  );
+
   return {
     getQuizDataByUserId,
     getQuizResultsByQuizId,
     getCurrentQuestionByQuizId,
     getCurrentTime,
     checkMemberKey,
+    setCompleted,
+    saveAnswer,
   };
 };
 

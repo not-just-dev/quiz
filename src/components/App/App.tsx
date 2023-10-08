@@ -1,67 +1,18 @@
-import { useState, useRef, useEffect } from "react";
-import useUser from "../../hooks/useUser/useUser";
+import { Routes, Route, Navigate } from "react-router-dom";
+import InitQuizPage from "../../pages/InitQuizPage/InitQuizPage";
 import Layout from "../Layout/Layout";
-import Game from "../Game/Game";
-import useLocalStorage from "../../hooks/useLocalStorage/useLocalStorage";
+import EndPage from "../../pages/EndPage/EndPage";
+import QuizPage from "../../pages/QuizPage/QuizPage";
 
 const App = (): React.ReactElement => {
-  const [isReady, setIsReady] = useState(false);
-
-  const { getUserId } = useUser();
-  const { getLocalData } = useLocalStorage();
-
-  const userId = useRef("");
-  const level = useRef("");
-  const position = useRef("");
-
-  useEffect(() => {
-    (async () => {
-      try {
-        userId.current = await getUserId();
-      } catch {
-        userId.current = "";
-      } finally {
-        setIsReady(true);
-      }
-    })();
-  }, [getUserId]);
-
-  useEffect(() => {
-    if (!isReady) {
-      return;
-    }
-
-    const { level: localLevel, position: localPosition } = getLocalData();
-    level.current = localLevel!;
-    position.current = localPosition!;
-  }, [getLocalData, isReady]);
-
-  if (!isReady) {
-    return (
-      <Layout>
-        <span>Validando...</span>
-      </Layout>
-    );
-  }
-
-  if (!userId.current) {
-    return (
-      <Layout>
-        <span>
-          El link ha expirado o la autenticación ha fallado, genera un nuevo
-          link.
-        </span>
-      </Layout>
-    );
-  }
-
   return (
     <Layout>
-      <Game
-        userId={userId.current}
-        level={level.current}
-        position={position.current}
-      />
+      <Routes>
+        <Route path="/" element={<Navigate to="/init-quiz" />} />
+        <Route path="/init-quiz" element={<InitQuizPage />} />
+        <Route path="/quiz" element={<QuizPage />} />
+        <Route path="/end" element={<EndPage />} />
+      </Routes>
     </Layout>
   );
 };

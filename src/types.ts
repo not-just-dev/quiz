@@ -4,3 +4,10 @@ export interface QuestionStructure {
   answers: string[];
   index?: number;
 }
+
+export interface QuizData {
+  quizId: string;
+  questionsCount: number;
+  endTime: Date;
+  isDone: boolean;
+}
