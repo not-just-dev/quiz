@@ -30,6 +30,11 @@ const CheckQuiz = ({ children }: PropsWithChildren): React.ReactElement => {
 
         setQuizId(apiQuizData.quizId);
 
+        if (location.pathname === "/end" && !apiQuizData.isDone) {
+          navigate(`/quiz${location.search}`);
+          return;
+        }
+
         setIsReady(true);
       } catch {
         navigate("/end?error=1");
