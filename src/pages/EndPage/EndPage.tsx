@@ -18,6 +18,10 @@ const EndPage = (): React.ReactElement => {
 
   useEffect(() => {
     (async () => {
+      if (!quizId) {
+        return;
+      }
+
       const { answersCount, correctAnswersCount } =
         await getQuizResultsByQuizId(quizId);
 
