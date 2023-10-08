@@ -19,7 +19,7 @@ const Question = ({
   const { saveAnswer } = useApi();
 
   const checkAnswer = async (answerIndex: number) => {
-    saveAnswer(quizId, answerIndex, questionIndex);
+    await saveAnswer(quizId, answerIndex, questionIndex);
 
     onAnswerQuestion();
   };

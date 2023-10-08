@@ -1,0 +1,30 @@
+.results {
+  display: grid;
+  grid-template-rows: 1fr 1fr;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: 10px;
+}
+
+.results__result {
+  grid-row: 1;
+  height: 150px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  color: #fab648;
+  background-color: #343741;
+
+  &:nth-child(3) {
+    grid-row: 2;
+    grid-column: 1 / span 2;
+    background-color: #fab648;
+    color: #343741;
+  }
+}
+
+.results__number {
+  font-size: 3rem;
+  font-weight: 700;
+}
