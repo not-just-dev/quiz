@@ -1,3 +1,4 @@
+import html2canvas from "html2canvas";
 import "./Results.css";
 
 interface ResultsProps {
@@ -15,6 +16,22 @@ const Results = ({
   )
     ? 0
     : (correctAnswersCount / answersCount) * 100;
+
+  const downloadImage = async () => {
+    const container = document.querySelector(".container") as HTMLElement;
+
+    const image = await html2canvas(container, {
+      backgroundColor: "#fff",
+      windowWidth: 800,
+      ignoreElements: (element) => element.classList.contains("button"),
+    });
+
+    const link = document.createElement("a");
+
+    link.download = "not-just-dev-quiz-results.png";
+    link.href = image.toDataURL();
+    link.click();
+  };
 
   return (
     <>
@@ -34,6 +51,11 @@ const Results = ({
             {correctAnswersPercentage.toFixed(2)}%
           </div>
         </div>
+      </div>
+      <div className="results-actions">
+        <button className="button" onClick={downloadImage}>
+          Descárgate una captura de tus resultados
+        </button>
       </div>
     </>
   );

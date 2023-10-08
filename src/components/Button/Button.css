@@ -1,4 +1,11 @@
 .button {
   border: 1px solid #000;
   padding: 10px 15px;
+  transition: all 0.1s ease-in-out;
+}
+
+.button:hover {
+  background-color: #fab648;
+  border-color: #fab648;
+  color: #343741;
 }

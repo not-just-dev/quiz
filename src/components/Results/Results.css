@@ -15,6 +15,7 @@
   gap: 20px;
   color: #fab648;
   background-color: #343741;
+  text-align: center;
 
   &:nth-child(3) {
     grid-row: 2;
@@ -27,4 +28,10 @@
 .results__number {
   font-size: 3rem;
   font-weight: 700;
+}
+
+.results-actions {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
 }
