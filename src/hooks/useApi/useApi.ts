@@ -13,14 +13,27 @@ const useApi = () => {
       showLoading();
 
       const {
-        data: { quizId, questionsCount, endTime, isDone },
+        data: {
+          quizId,
+          position: positionName,
+          questionsCount,
+          endTime,
+          isDone,
+        },
       } = await axios.get<QuizData>(
         `quizzes/${userId}?level=${level}&position=${position}`,
       );
 
       hideLoading();
 
-      return { quizId, questionsCount, endTime, isDone };
+      return {
+        quizId,
+        level,
+        position: positionName,
+        questionsCount,
+        endTime,
+        isDone,
+      };
     },
     [hideLoading, showLoading],
   );

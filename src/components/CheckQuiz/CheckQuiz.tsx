@@ -11,7 +11,9 @@ const CheckQuiz = ({ children }: PropsWithChildren): React.ReactElement => {
   const location = useLocation();
   const { key, memberId, level, position } = useQueryParams();
   const { getQuizData } = useGame();
-  const { setQuizId } = useGameStore((state) => state);
+  const { setQuizId, setQuizLevel, setQuizPosition } = useGameStore(
+    (state) => state,
+  );
 
   const [isReady, setIsReady] = useState(false);
 
@@ -29,6 +31,8 @@ const CheckQuiz = ({ children }: PropsWithChildren): React.ReactElement => {
         const apiQuizData = await getQuizData(memberId!, level!, position!);
 
         setQuizId(apiQuizData.quizId);
+        setQuizLevel(apiQuizData.level);
+        setQuizPosition(apiQuizData.position);
 
         if (location.pathname === "/end" && !apiQuizData.isDone) {
           navigate(`/quiz${location.search}`);
@@ -53,6 +57,8 @@ const CheckQuiz = ({ children }: PropsWithChildren): React.ReactElement => {
     navigate,
     position,
     setQuizId,
+    setQuizLevel,
+    setQuizPosition,
   ]);
 
   return <>{isReady ? children : null}</>;

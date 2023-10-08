@@ -1,0 +1,18 @@
+.quizz-title {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+  padding: 20px 0;
+  font-weight: bold;
+}
+
+@media (min-width: 620px) {
+  .quizz-title {
+    padding-bottom: 0;
+  }
+}
+
+.quizz-title p {
+  margin: 0;
+}
