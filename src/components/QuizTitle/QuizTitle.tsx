@@ -6,8 +6,7 @@ const QuizTitle = (): React.ReactElement => {
 
   return (
     <div className="quizz-title">
-      <p>Puesto: {quizPosition}</p>
-      <p>Nivel: {quizLevel}</p>
+      Entrevista para el puesto de {quizPosition} {quizLevel}
     </div>
   );
 };
