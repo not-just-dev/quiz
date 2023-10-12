@@ -2,6 +2,7 @@ export interface QuestionStructure {
   id: string;
   question: string;
   code?: string;
+  language?: string;
   answers: string[];
   index?: number;
 }

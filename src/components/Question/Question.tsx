@@ -15,7 +15,7 @@ interface QuestionProps {
 
 const Question = ({
   quizId,
-  question: { question, code, answers },
+  question: { question, code, language, answers },
   questionIndex,
   onAnswerQuestion,
 }: QuestionProps): React.ReactElement => {
@@ -30,7 +30,7 @@ const Question = ({
   useEffect(() => {
     setTimeout(() => {
       hljs.highlightAll();
-    }, 500);
+    }, 1000);
   }, []);
 
   return (
@@ -38,7 +38,9 @@ const Question = ({
       <h2 className="question__title">{question}</h2>
       {code && (
         <pre className="question__code">
-          <code className="language-javascript">{code}</code>
+          <code className={`language-${language ? language : "javascript"}`}>
+            {code}
+          </code>
         </pre>
       )}
       <div className="question__answers">
