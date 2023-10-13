@@ -127,6 +127,17 @@ const useApi = () => {
     [hideLoading, showLoading],
   );
 
+  const deleteQuiz = useCallback(
+    async (quizId: string) => {
+      showLoading();
+
+      await axios.delete(`quizzes/${quizId}`);
+
+      hideLoading();
+    },
+    [hideLoading, showLoading],
+  );
+
   return {
     getQuizDataByUserId,
     getQuizResultsByQuizId,
@@ -135,6 +146,7 @@ const useApi = () => {
     checkMemberKey,
     setCompleted,
     saveAnswer,
+    deleteQuiz,
   };
 };
 

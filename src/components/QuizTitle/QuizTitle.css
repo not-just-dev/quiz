@@ -1,10 +1,16 @@
 .quizz-title {
   padding: 20px 0;
   font-weight: bold;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
 }
 
 @media (min-width: 620px) {
   .quizz-title {
     padding-bottom: 0;
+    flex-direction: row;
   }
 }

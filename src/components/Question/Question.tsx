@@ -31,6 +31,10 @@ const Question = ({
     setTimeout(() => {
       hljs.highlightAll();
     }, 1000);
+
+    setTimeout(() => {
+      hljs.highlightAll();
+    }, 1000);
   }, []);
 
   return (
