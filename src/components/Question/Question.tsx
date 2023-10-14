@@ -1,10 +1,8 @@
-import "highlight.js/styles/github-dark.css";
-import hljs from "highlight.js";
 import { QuestionStructure } from "../../types";
 import Button from "../Button/Button";
 import "./Question.css";
 import useApi from "../../hooks/useApi/useApi";
-import { useEffect } from "react";
+import CodeSnippet from "../CodeSnippet/CodeSnippet";
 
 interface QuestionProps {
   quizId: string;
@@ -27,26 +25,10 @@ const Question = ({
     onAnswerQuestion();
   };
 
-  useEffect(() => {
-    setTimeout(() => {
-      hljs.highlightAll();
-    }, 1000);
-
-    setTimeout(() => {
-      hljs.highlightAll();
-    }, 1000);
-  }, []);
-
   return (
     <article className="question">
       <h2 className="question__title">{question}</h2>
-      {code && (
-        <pre className="question__code">
-          <code className={`language-${language ? language : "javascript"}`}>
-            {code}
-          </code>
-        </pre>
-      )}
+      {code && <CodeSnippet code={code} language={language} />}
       <div className="question__answers">
         {answers.map((answer, position) => (
           <Button
