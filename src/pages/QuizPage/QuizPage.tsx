@@ -24,6 +24,8 @@ const QuizPage = (): React.ReactElement => {
     isDone: false,
     level: "",
     position: "",
+    duration: 0,
+    hasStarted: true,
   });
   const [currentQuestion, setCurrentQuestion] = useState<{
     question: QuestionStructure;

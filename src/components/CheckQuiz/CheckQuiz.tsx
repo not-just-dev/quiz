@@ -17,6 +17,7 @@ const CheckQuiz = ({ children }: PropsWithChildren): React.ReactElement => {
     setQuizPosition,
     setQuizDuration,
     setQuizTotalQuestions,
+    setIsAdmin,
   } = useGameStore((state) => state);
 
   const [isReady, setIsReady] = useState(false);
@@ -39,6 +40,10 @@ const CheckQuiz = ({ children }: PropsWithChildren): React.ReactElement => {
         setQuizPosition(apiQuizData.position);
         setQuizTotalQuestions(apiQuizData.questionsCount);
         setQuizDuration(apiQuizData.duration);
+
+        if (location.search.includes("admin=mariogl")) {
+          setIsAdmin();
+        }
 
         if (
           (location.pathname === "/end" && !apiQuizData.isDone) ||
@@ -73,6 +78,7 @@ const CheckQuiz = ({ children }: PropsWithChildren): React.ReactElement => {
     memberId,
     navigate,
     position,
+    setIsAdmin,
     setQuizDuration,
     setQuizId,
     setQuizLevel,

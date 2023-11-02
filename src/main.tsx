@@ -10,7 +10,7 @@ import "./index.css";
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <FlagsmithProvider
     options={{
-      environmentID: "HrUnnNN4RuBKjMBwajUCez",
+      environmentID: import.meta.env.VITE_APP_FLAGSMITH_ENVIRONMENT,
     }}
     flagsmith={flagsmith}
   >

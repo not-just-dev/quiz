@@ -8,10 +8,12 @@ type FlagOptions = "beta";
 const QuizTitle = (): React.ReactElement => {
   const flags = useFlags<FlagOptions>(["beta"]);
 
-  const { quizLevel, quizPosition, quizId } = useGameStore((state) => state);
+  const { quizLevel, quizPosition, quizId, isAdmin } = useGameStore(
+    (state) => state,
+  );
   const { deleteQuiz } = useApi();
 
-  const isBeta = flags.beta.enabled;
+  const isBeta = isAdmin && flags.beta.enabled;
 
   const resetQuiz = async () => {
     await deleteQuiz(quizId);

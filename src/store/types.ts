@@ -6,6 +6,7 @@ export interface GameState {
   quizDuration: number;
   hasEnded: boolean;
   isLoading: boolean;
+  isAdmin: boolean;
   setQuizId: (quizId: string) => void;
   setQuizLevel: (quizLevel: string) => void;
   setQuizPosition: (quizPosition: string) => void;
@@ -14,4 +15,5 @@ export interface GameState {
   end: () => void;
   showLoading: () => void;
   hideLoading: () => void;
+  setIsAdmin: () => void;
 }
