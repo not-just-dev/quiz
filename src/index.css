@@ -10,6 +10,7 @@ html {
 
 body {
   margin: 0;
+  min-height: 100vh;
 }
 
 button {
@@ -21,6 +22,10 @@ button {
 
 h1 {
   margin: 0;
+}
+
+a {
+  color: inherit;
 }
 
 .container {
@@ -36,13 +41,12 @@ h1 {
 
 .main-content {
   padding-top: 10px;
-  padding-bottom: 10px;
+  padding-bottom: 80px;
 }
 
 @media (min-width: 620px) {
   .main-content {
     padding-top: 20px;
-    padding-bottom: 40px;
   }
 }
 

@@ -26,7 +26,8 @@ const HomePage = (): React.ReactElement => {
       <p>
         Vas a iniciar la simulación de entrevista técnica. Este test consta de{" "}
         {quizTotalQuestions} preguntas técnicas y tiene una duración máxima de{" "}
-        {quizDuration / 60} minutos.
+        {quizDuration / 60} minutos. No se puede pausar, así que hazlo cuando
+        tengas el tiempo disponible.
       </p>
       <p>Empieza cuando quieras y... ¡que salga muy bien!</p>
       <div className="actions">
