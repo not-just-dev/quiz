@@ -28,7 +28,7 @@ const Results = ({
 
     const link = document.createElement("a");
 
-    link.download = "not-just-dev-quiz-results.png";
+    link.download = "not-just-dev-entrevisteitor-results.png";
     link.href = image.toDataURL();
     link.click();
   };
