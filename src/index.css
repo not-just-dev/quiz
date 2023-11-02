@@ -45,3 +45,10 @@ h1 {
     padding-bottom: 40px;
   }
 }
+
+.actions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100px;
+}

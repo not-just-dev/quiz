@@ -2,6 +2,7 @@
   border: 1px solid #000;
   padding: 10px 15px;
   transition: all 0.1s ease-in-out;
+  font-weight: bold;
 }
 
 .button:active {

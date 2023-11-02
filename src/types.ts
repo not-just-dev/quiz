@@ -10,8 +10,10 @@ export interface QuestionStructure {
 export interface QuizData {
   quizId: string;
   level: string;
+  duration: number;
   position: string;
   questionsCount: number;
   endTime: Date;
   isDone: boolean;
+  hasStarted: boolean;
 }

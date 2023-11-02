@@ -37,13 +37,16 @@ const EndPage = (): React.ReactElement => {
       {error ? (
         <>
           <p>
-            Me resulta muy incómodo decirte esto, pero... ha habido un error.
+            Me resulta muy incómodo decirte esto, pero... ha habido un error ❌.
           </p>
           <p>Vuelve a generar el comando en Discord y 🤞</p>
         </>
       ) : (
         <>
-          <p>¡Enhorabuena! Has terminado el test.</p>
+          <p>
+            🏁 ¡Enhorabuena! Has terminado el test. Podrás volver a realizarlo
+            dentro de una semana.
+          </p>
           <Results results={results} />
         </>
       )}

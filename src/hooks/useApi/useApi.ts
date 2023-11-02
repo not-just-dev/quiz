@@ -16,9 +16,11 @@ const useApi = () => {
         data: {
           quizId,
           position: positionName,
+          duration,
           questionsCount,
           endTime,
           isDone,
+          hasStarted,
         },
       } = await axios.get<QuizData>(
         `quizzes/${userId}?level=${level}&position=${position}`,
@@ -31,8 +33,10 @@ const useApi = () => {
         level,
         position: positionName,
         questionsCount,
+        duration,
         endTime,
         isDone,
+        hasStarted,
       };
     },
     [hideLoading, showLoading],
@@ -114,6 +118,17 @@ const useApi = () => {
     [hideLoading, showLoading],
   );
 
+  const setStarted = useCallback(
+    async (quizId: string) => {
+      showLoading();
+
+      await axios.patch(`quizzes/set-started?quizId=${quizId}`);
+
+      hideLoading();
+    },
+    [hideLoading, showLoading],
+  );
+
   const saveAnswer = useCallback(
     async (quizId: string, answerIndex: number, questionIndex: number) => {
       showLoading();
@@ -145,6 +160,7 @@ const useApi = () => {
     getCurrentTime,
     checkMemberKey,
     setCompleted,
+    setStarted,
     saveAnswer,
     deleteQuiz,
   };
